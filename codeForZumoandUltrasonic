@@ -1,0 +1,157 @@
+int turn_delay = 40;
+   
+
+
+  const int rightMotor =7 ;
+  const int leftMotor= 8 ;
+  const int rightSpeed =9;
+  const int leftSpeed =10;
+
+//Sensor Connection
+  const int left_sensor_pin = A2;
+  const int right_sensor_pin = A0;
+
+  
+  
+  int left_sensor_state;
+  int right_sensor_state;
+
+  void MoveForward(void);
+  void MoveBackwards(void);
+  void MoveLeft(void);
+  void MoveRight(void);
+  int u =1;
+
+void setup() {
+  pinMode(rightMotor, OUTPUT);
+  pinMode(leftMotor, OUTPUT);
+  pinMode(rightSpeed, OUTPUT);
+  pinMode(leftSpeed, OUTPUT);
+  pinMode(left_sensor_pin,INPUT_PULLUP);
+  pinMode(right_sensor_pin,INPUT_PULLUP);
+
+
+  Serial.begin(9600);
+
+  delay(3000);
+  
+}
+
+void loop() {
+  
+
+  
+
+
+left_sensor_state = analogRead(left_sensor_pin);
+right_sensor_state = analogRead(right_sensor_pin);
+
+if(right_sensor_state > 500 && left_sensor_state < 500)//when turning can try of thinking marching to the left and how it goona change
+{
+  Serial.println("turning right");//RIGHT WHITE,LEFT BLACK
+  //check if condition after every delay.So if always thrue,always continue
+  //chun hao one is when stop caause lowest is zero and is dgital.Speifically for servo.Different from us since urs is all movements.
+  
+  MoveRight();
+ 
+  }
+
+if(right_sensor_state < 500 && left_sensor_state > 500) //RIGHT black,LEFT white
+{
+  Serial.println("turning left");
+  
+  MoveLeft();
+  }
+
+if(right_sensor_state > 500 && left_sensor_state > 500)
+{
+  Serial.println("going forward");
+
+  MoveForward();
+  }
+
+
+
+
+if(right_sensor_state < 500 && left_sensor_state < 500)
+{ 
+  Serial.println("stop");
+  
+  analogWrite (rightSpeed,0);
+  analogWrite (leftSpeed,0 );
+  delay(3000);
+
+while(u<2)
+{
+ MoveBackwards();
+ u++
+  ;
+ }
+
+   
+}
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ void MoveRight(void)
+ {
+  digitalWrite (rightMotor,LOW);
+  digitalWrite(leftMotor,LOW);                       
+
+
+  analogWrite (rightSpeed,220);
+  analogWrite (leftSpeed,1);
+  delay(turn_delay);return;
+  
+ }
+ void MoveLeft(void)
+ {
+  digitalWrite (rightMotor,LOW);
+  digitalWrite(leftMotor,LOW);                       
+
+
+
+  analogWrite (rightSpeed,1);
+  analogWrite (leftSpeed,220);
+
+  delay(turn_delay);return;
+ }
+ void MoveForward(void)
+ {
+  digitalWrite (rightMotor,LOW);
+  digitalWrite(leftMotor,LOW);                       
+
+  analogWrite (rightSpeed,50);
+  analogWrite (leftSpeed,50 );
+  delay(turn_delay);
+  return;
+ }
+ 
+ void MoveBackwards(void)
+ {
+   digitalWrite(rightMotor,HIGH);
+   digitalWrite(leftMotor,HIGH);
+
+   analogWrite(rightSpeed,50);
+   analogWrite(leftSpeed,50);
+   delay(6000);
+   return;
+ }
