@@ -1,157 +1,75 @@
-int turn_delay = 40;
-   
+// defines pins numbers
+const int servo = 9;
+const int trigPin = 10;
+const int echoPin = 11;
 
+// defines variables
+long duration;
+int distance;
+int light;
+long r, g, b;
 
-  const int rightMotor =7 ;
-  const int leftMotor= 8 ;
-  const int rightSpeed =9;
-  const int leftSpeed =10;
+#include <Servo.h>
+#include <FastLED.h>
+#define LED_PIN     5
+#define NUM_LEDS    30
+CRGB leds[NUM_LEDS];
 
-//Sensor Connection
-  const int left_sensor_pin = A2;
-  const int right_sensor_pin = A0;
+Servo myservo;  // create servo object to control a servo
+// twelve servo objects can be created on most boards
 
-  
-  
-  int left_sensor_state;
-  int right_sensor_state;
-
-  void MoveForward(void);
-  void MoveBackwards(void);
-  void MoveLeft(void);
-  void MoveRight(void);
-  int u =1;
+int pos = 0;    // variable to store the servo position
 
 void setup() {
-  pinMode(rightMotor, OUTPUT);
-  pinMode(leftMotor, OUTPUT);
-  pinMode(rightSpeed, OUTPUT);
-  pinMode(leftSpeed, OUTPUT);
-  pinMode(left_sensor_pin,INPUT_PULLUP);
-  pinMode(right_sensor_pin,INPUT_PULLUP);
-
-
-  Serial.begin(9600);
-
-  delay(3000);
-  
+  pinMode(5, OUTPUT);
+  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  myservo.attach(servo);  // attaches the servo on pin 9 to the servo object
+  myservo.write(0);   // Sets Servo to initially 0 degrees
+  Serial.begin(9600); // Starts the serial communication
 }
 
 void loop() {
-  
-
-  
+  for (int i = 0; i <= 29; i++) {
 
 
-left_sensor_state = analogRead(left_sensor_pin);
-right_sensor_state = analogRead(right_sensor_pin);
 
-if(right_sensor_state > 500 && left_sensor_state < 500)//when turning can try of thinking marching to the left and how it goona change
-{
-  Serial.println("turning right");//RIGHT WHITE,LEFT BLACK
-  //check if condition after every delay.So if always thrue,always continue
-  //chun hao one is when stop caause lowest is zero and is dgital.Speifically for servo.Different from us since urs is all movements.
-  
-  MoveRight();
- 
+    leds[i] = CRGB(255, 0, 0);              // turn on strip red
+    FastLED.show();
+    delay(10);
+
   }
-
-if(right_sensor_state < 500 && left_sensor_state > 500) //RIGHT black,LEFT white
-{
-  Serial.println("turning left");
-  
-  MoveLeft();
+  //
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  // Calculating the distance
+  distance = duration * 0.034 / 2;
+  // Prints the distance on the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  //Servo
+  if (distance < 7) { //Check distance is less than 10cm
+    for (int i = 0; i <= 29; i++) {
+      leds[i] = CRGB(0, 255, 0);              // turn on strip green
+      FastLED.show();
+      delay(10);
+    }
+    myservo.write(45); // Sets Servo in stages from 0 to 180 degrees so soap does not pitch out.
+    delay(100);
+    myservo.write(90);
+    delay(100);
+    myservo.write(135);
+    delay(100);
+    myservo.write(180); //Ajust how far you want the servo to go.
+    delay(1000);
+    myservo.write(0); // Reset the servo to 0 Degrees
+    delay(3000);   //Delay the next time someone can get soap
   }
-
-if(right_sensor_state > 500 && left_sensor_state > 500)
-{
-  Serial.println("going forward");
-
-  MoveForward();
-  }
-
-
-
-
-if(right_sensor_state < 500 && left_sensor_state < 500)
-{ 
-  Serial.println("stop");
-  
-  analogWrite (rightSpeed,0);
-  analogWrite (leftSpeed,0 );
-  delay(3000);
-
-while(u<2)
-{
- MoveBackwards();
- u++
-  ;
- }
-
-   
 }
-}
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- void MoveRight(void)
- {
-  digitalWrite (rightMotor,LOW);
-  digitalWrite(leftMotor,LOW);                       
-
-
-  analogWrite (rightSpeed,220);
-  analogWrite (leftSpeed,1);
-  delay(turn_delay);return;
-  
- }
- void MoveLeft(void)
- {
-  digitalWrite (rightMotor,LOW);
-  digitalWrite(leftMotor,LOW);                       
-
-
-
-  analogWrite (rightSpeed,1);
-  analogWrite (leftSpeed,220);
-
-  delay(turn_delay);return;
- }
- void MoveForward(void)
- {
-  digitalWrite (rightMotor,LOW);
-  digitalWrite(leftMotor,LOW);                       
-
-  analogWrite (rightSpeed,50);
-  analogWrite (leftSpeed,50 );
-  delay(turn_delay);
-  return;
- }
- 
- void MoveBackwards(void)
- {
-   digitalWrite(rightMotor,HIGH);
-   digitalWrite(leftMotor,HIGH);
-
-   analogWrite(rightSpeed,50);
-   analogWrite(leftSpeed,50);
-   delay(6000);
-   return;
- }
